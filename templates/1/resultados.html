@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Analysis</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Estilo personalizado -->
+    <style>
+        body {
+            background: linear-gradient(to bottom, #3498db, #bdc3c7);
+            color: #ffffff;
+            background-size: cover;
+            height: 100%;
+        }
+
+        .main-container {
+            padding: 20px;
+        }
+
+        h1, h2 {
+            color: #ffffff;
+        }
+
+        img {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid main-container">
+        <h1 class="mt-4">Imágenes con puntuación de 1:</h1>
+        <div class="row">
+            {% for image in images_to_display %}
+                <div class="col-md-3">
+                    <img src="{{ url_for('static', filename=image) }}" alt="Emotion Image" class="img-fluid">
+                </div>
+            {% endfor %}
+        </div>
+    
+        <h2 class="mt-4">Puntuación general: {{ final_score }}</h2>
+    </div>
+
+    <!-- Bootstrap JS (optional, only if you need JavaScript components) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+</html>

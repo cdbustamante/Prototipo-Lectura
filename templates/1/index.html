@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Recorder</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #3498db, #bdc3c7);
+            color: #ffffff;
+            background-size: cover;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Webcam Recorder</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+    
+    <!-- Encabezado principal -->
+    <h1>Webcam Recorder</h1>
+    
+    <!-- Contenedor del video -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <video id="video" width="640" height="480" controls autoplay></video>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            let startRecordingBtn = document.querySelector('#start-recording');
+            let stopRecordingBtn = document.querySelector('#stop-recording');
+            let viewResultsBtn = document.querySelector('#view-results');
+            let recording = false;
+
+            startRecordingBtn.onclick = function() {
+                recording = true;
+                $.post('/start_recording', function(data) {
+                    if (data === 'Recording started') {
+                        startRecordingBtn.disabled = true;
+                        stopRecordingBtn.disabled = false;
+                        viewResultsBtn.disabled = true; // Deshabilitar el botón de ver resultados durante la grabación
+                    }
+                });
+            };
+
+            stopRecordingBtn.onclick = function() {
+                recording = false;
+                $.post('/stop_recording', function(data) {
+                    if (data === 'Recording stopped') {
+                        startRecordingBtn.disabled = false;
+                        stopRecordingBtn.disabled = true;
+                        viewResultsBtn.disabled = false; // Habilitar el botón de ver resultados después de detener la grabación
+                    }
+                });
+            };
+
+            viewResultsBtn.onclick = function() {
+                $.post('/run_python_script', function(data) {
+                    window.location.href = "/resultados";
+                });
+                console.log("Ver resultados aquí"); // Puedes cambiar esto con la acción que desees
+            };
+
+            function updateStatus() {
+                if (recording) {
+                    document.querySelector('#status').innerHTML = 'Grabando...';
+                } else {
+                    document.querySelector('#status').innerHTML = 'No se está grabando';
+                }
+            }
+
+            setInterval(updateStatus, 1000);
+
+            // Actualiza el elemento de video con los frames capturados en tiempo real
+            function updateVideo() {
+                if (recording) {
+                    document.querySelector('#video').src = '/static/imagenes/output.mp4';
+                } else {
+                    document.querySelector('#video').src = '/video_feed';  // Endpoint Flask para el streaming de video en tiempo real
+                }
+            }
+
+            setInterval(updateVideo, 1000);
+        });
+        viewResultsBtn.onclick = function() {
+            window.location.href = "resultados.html";
+            console.log("Ver resultados aquí"); // Puedes cambiar esto con la acción que desees
+            };
+    </script>
+
+    <!-- Controles de grabación -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <!-- Botones de grabación y estado -->
+                <button id="start-recording" class="btn btn-primary">Iniciar Grabación</button>
+                <button id="stop-recording" class="btn btn-danger" disabled>Detener Grabación</button>
+                <button id="view-results" class="btn btn-success" disabled>Ver Resultados</button>
+                <p id="status"></p>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
